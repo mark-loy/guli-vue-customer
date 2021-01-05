@@ -1,4 +1,6 @@
 import axios from 'axios'
+import { Message, MessageBox } from 'element-ui'
+import cookie from 'js-cookie'
 
 // 创建axios实例
 const service = axios.create({
@@ -7,7 +9,22 @@ const service = axios.create({
 })
 
 // TODO request 拦截器
-
+service.interceptors.request.use(
+  request => {
+    // 获取cookie中的token
+    const token = cookie.get('token')
+    // 判断token值
+    if (token !== undefined && token !== null && token !== ""){
+      // 在请求头信息中附带token
+      request.headers["token"] = token
+    }
+    return request
+  },
+  error => {
+    console.log(error) // for debug
+    Promise.reject(error)
+  }
+)
 
 // response 拦截器
 service.interceptors.response.use(
@@ -17,8 +34,11 @@ service.interceptors.response.use(
      */
     const res = response.data
     if (res.code !== 20000) {
-      console.log(res.message);
-      alert(res.message)
+      Message({
+        message: res.message,
+        type: 'error',
+        duration: 5 * 1000
+      })
       return Promise.reject('error')
     }
     return response.data
@@ -26,7 +46,11 @@ service.interceptors.response.use(
   },
   error => {
     console.log('err' + error) // for debug
-    alert(error)
+    Message({
+      message: error.message,
+      type: 'error',
+      duration: 5 * 1000
+    })
     return Promise.reject(error)
   }
 )

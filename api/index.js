@@ -12,7 +12,7 @@ export default {
   getIndexAll() {
     return request({
       method: 'get',
-      url: '/edu/front/index/all'
+      url: 'edu/front/index/all'
     })
   }
 

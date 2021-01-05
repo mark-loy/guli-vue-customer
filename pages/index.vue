@@ -175,7 +175,6 @@ export default {
     /* 获取banner图数据 */
     getBanners() {
       indexApi.getBannerPublish().then((res) => {
-        console.log(res);
         this.banners = res.data.banners;
       });
     },

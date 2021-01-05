@@ -2,6 +2,10 @@ module.exports = {
   plugins: [{
     src: '~/plugins/vue-swiper.js',
     ssr: false
+  },
+  {
+    src: '~/plugins/element-ui.js',
+    ssr: false  
   }],
   css: [
     'swiper/dist/css/swiper.css'
