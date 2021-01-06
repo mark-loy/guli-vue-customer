@@ -50,7 +50,7 @@
               id="weixin"
               class="weixin"
               target="_blank"
-              href="http://qy.free.idcfengye.com/api/ucenter/weixinLogin/login"
+              href="http://192.168.166.128:88/api/ucenter/wx/code"
               ><i class="iconfont icon-weixin"
             /></a>
           </li>

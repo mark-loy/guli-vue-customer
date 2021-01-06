@@ -151,6 +151,7 @@ import "~/assets/css/global.css";
 import "~/assets/css/web.css";
 
 import cookie from "js-cookie";
+import ucenterApi from '@/api/ucenter'
 
 export default {
   data() {
@@ -160,6 +161,19 @@ export default {
     };
   },
   created() {
+    // 判断路由
+    const token = this.$route.query.token
+    if (token) {
+      // token存在，将token存入cookie中
+      cookie.set("token", token, {domain: 'localhost'})
+      // 调用获取登录用户信息api
+      ucenterApi.getMemberBytoken().then(res => {
+        // 将用户信息存入cookie中
+        cookie.set("member", res.data.member, {domain: 'localhost'})
+        // 刷新登录的用户数据
+        this.getMemberInfo();
+      })
+    }
     this.getMemberInfo();
   },
   methods: {
@@ -169,7 +183,10 @@ export default {
       const memberStr = cookie.get("member");
       // 判断memberStr
       if (memberStr !== undefined && memberStr !== null && memberStr !== "") {
+        // 将字符串转为json对象
         this.memberInfo = JSON.parse(memberStr);
+        // 刷新页面
+        //window.location.href = "/"
       }
     },
     /* 用户退出 */
