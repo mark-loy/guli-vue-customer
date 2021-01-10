@@ -13,6 +13,8 @@
         <article class="c-v-pic-wrap" style="height: 357px">
           <section class="p-h-video-box" id="videoPlay">
             <img
+              height="357px"
+              width="100%"
               :src="courseBase.cover"
               :alt="courseBase.title"
               class="dis c-v-pic"
@@ -42,12 +44,26 @@
               </span>
             </section>
             <section class="c-attr-mt">
-              <a href="#" title="立即观看" class="comm-btn c-btn-3">立即观看</a>
+              <a
+                href="javascript:void(0)"
+                v-if="Number(courseBase.price) !== 0 && !payed"
+                @click="saveOrder()"
+                title="立即购买"
+                class="comm-btn c-btn-3"
+                >立即购买</a
+              >
+              <a
+                href="javascript:void(0)"
+                v-else
+                title="立即观看"
+                class="comm-btn c-btn-3"
+                >立即观看</a
+              >
             </section>
           </section>
         </aside>
         <aside class="thr-attr-box">
-          <ol class="thr-attr-ol clearfix">
+          <ol class="thr-attr-ol">
             <li>
               <p>&nbsp;</p>
               <aside>
@@ -127,7 +143,10 @@
                                 :key="video.id"
                                 class="lh-menu-second ml30"
                               >
-                                <a :href="'/player/' + video.videoSourceId" target="_blank">
+                                <a
+                                  :href="'/player/' + video.videoSourceId"
+                                  target="_blank"
+                                >
                                   <span class="fr">
                                     <i class="free-icon vam mr10">免费试听</i>
                                   </span>
@@ -188,6 +207,8 @@
 </template>
 <script>
 import courseApi from "@/api/course";
+import orderApi from "@/api/order";
+import cookie from "js-cookie";
 
 export default {
   /* 异步调用课程详情数据 */
@@ -201,6 +222,39 @@ export default {
       };
     });
   },
-  methods: {},
+  data() {
+    return {
+      /* 控制立即购买按钮 */
+      payed: false,
+    };
+  },
+  created() {
+    // 判断用户是否登录
+    if (cookie.get("token")) {
+      // 登录，则判断是否已购买该课程
+      orderApi.checkOrderState(this.courseBase.id).then((res) => {
+        console.log(res.message);
+        if (res.data !== {}) {
+          // 判断status
+          if (res.data.status === 1) {
+            // 课程已购买
+            this.payed = true;
+          }
+        }
+      });
+    }
+  },
+  methods: {
+    /* 保存订单信息 */
+    saveOrder() {
+      // 调用api
+      orderApi.saveOrder(this.courseBase.id).then((res) => {
+        // 提示
+        this.$message.success("生成订单成功");
+        // 路由跳转到订单页
+        this.$router.push("/order/" + res.data.orderNo);
+      });
+    },
+  },
 };
 </script>

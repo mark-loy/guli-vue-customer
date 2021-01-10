@@ -1,5 +1,8 @@
 import axios from 'axios'
-import { Message, MessageBox } from 'element-ui'
+import {
+  Message,
+  MessageBox
+} from 'element-ui'
 import cookie from 'js-cookie'
 
 // 创建axios实例
@@ -14,7 +17,7 @@ service.interceptors.request.use(
     // 获取cookie中的token
     const token = cookie.get('token')
     // 判断token值
-    if (token !== undefined && token !== null && token !== ""){
+    if (token !== undefined && token !== null && token !== "") {
       // 在请求头信息中附带token
       request.headers["token"] = token
     }
@@ -34,12 +37,16 @@ service.interceptors.response.use(
      */
     const res = response.data
     if (res.code !== 20000) {
-      Message({
-        message: res.message,
-        type: 'error',
-        duration: 5 * 1000
-      })
-      return Promise.reject('error')
+      if (res.code === 25000) {
+        return response.data
+      } else {
+        Message({
+          message: res.message,
+          type: 'error',
+          duration: 5 * 1000
+        })
+        return Promise.reject('error')
+      }
     }
     return response.data
 
